@@ -1,0 +1,33 @@
+/* src/templates/DashboardLayout/DashboardLayout.css */
+/* Movemos os estilos de header do App.jsx para cá, já que é parte do layout */
+
+.dashboard-header {
+    display: flex;
+    flex-direction: column; /* flex-col */
+    justify-content: space-between; /* justify-between */
+    align-items: flex-start; /* items-start */
+    margin-bottom: 2rem; /* mb-8 */
+    gap: 1rem; /* gap-4 */
+}
+
+@media (min-width: 768px) { /* md:flex-row md:items-center */
+    .dashboard-header {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.dashboard-title {
+    font-size: 1.875rem; /* text-3xl */
+    font-weight: 700; /* font-bold */
+    color: #1f2937; /* text-gray-800 */
+}
+
+.dashboard-subtitle {
+    color: #4b5563; /* text-gray-600 */
+}
+
+.dashboard-content {
+    /* Estilos para a área principal de conteúdo, se necessário */
+    padding-bottom: 2rem; /* Garante espaço na parte inferior */
+}

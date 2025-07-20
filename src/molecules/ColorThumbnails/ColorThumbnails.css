@@ -1,0 +1,61 @@
+/* src/molecules/ColorThumbnails/ColorThumbnails.css */
+.color-thumbnails-container {
+    margin-top: 0.75rem; /* mt-3 */
+}
+
+.color-thumbnails-label {
+    font-size: 0.875rem; /* text-sm */
+    color: #6b7280; /* text-gray-500 */
+    margin-bottom: 0.5rem; /* mb-2 */
+}
+
+.color-thumbnails-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem; /* gap-2 */
+}
+
+.color-thumbnail-item {
+    position: relative;
+    /* Adiciona um display para que o pseudo-elemento :hover funcione corretamente se for o caso */
+    display: inline-block;
+}
+
+.color-thumbnail {
+    width: 2rem; /* w-8 */
+    height: 2rem; /* h-8 */
+    border-radius: 9999px; /* rounded-full */
+    border: 2px solid white; /* border-2 border-white */
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); /* shadow-md */
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    transition: transform 0.2s ease; /* transition duration-200 */
+}
+
+.color-thumbnail:hover {
+    transform: scale(1.1);
+}
+
+.color-thumbnail-name {
+    position: absolute;
+    bottom: 100%; /* bottom-full */
+    left: 50%; /* left-1/2 */
+    transform: translateX(-50%) translateY(-0.5rem); /* transform -translate-x-1/2 mb-2 */
+    padding: 0.25rem 0.5rem; /* px-2 py-1 */
+    font-size: 0.75rem; /* text-xs */
+    color: white; /* text-white */
+    background-color: #1f2937; /* bg-gray-800 */
+    border-radius: 0.25rem; /* rounded */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    white-space: nowrap;
+    pointer-events: none; /* Garante que não interfira com cliques no thumbnail */
+    z-index: 10; /* Para garantir que apareça acima de outros elementos */
+}
+
+.color-thumbnail-item:hover .color-thumbnail-name {
+    opacity: 1;
+    visibility: visible;
+}

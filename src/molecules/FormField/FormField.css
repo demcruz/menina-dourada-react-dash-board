@@ -1,0 +1,7 @@
+/* src/molecules/FormField/FormField.css */
+/* Este CSS pode ser bastante simples, talvez apenas para espaçamento se necessário. */
+/* O espaçamento padrão entre os campos já é tratado pelo input-group dentro do Input.css */
+/* Mas se você quiser adicionar um espaçamento extra ou alguma regra específica para grupos de campos, pode fazer aqui. */
+.form-field-group {
+    /* Exemplo: margin-bottom: 1rem; */
+}

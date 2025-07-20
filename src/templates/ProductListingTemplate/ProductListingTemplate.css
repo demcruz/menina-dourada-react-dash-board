@@ -1,0 +1,11 @@
+/* src/templates/ProductListingTemplate/ProductListingTemplate.css */
+/* A classe .products-grid já está no index.css */
+/* Adicionamos aqui apenas o que for específico do template de listagem */
+
+.no-products-message {
+    grid-column: 1 / -1; /* Ocupa todas as colunas do grid */
+    text-align: center;
+    padding: 2rem;
+    color: #6b7280; /* text-gray-500 */
+    font-size: 1.125rem; /* text-lg */
+}

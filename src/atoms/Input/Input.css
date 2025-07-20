@@ -1,0 +1,27 @@
+/* src/atoms/Input/Input.css */
+.input-group {
+    margin-bottom: 1rem; /* space-y-4 no form */
+}
+
+.input-label {
+    display: block;
+    font-size: 0.875rem; /* text-sm */
+    font-weight: 500; /* font-medium */
+    color: #374151; /* text-gray-700 */
+    margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.5rem 1rem; /* px-4 py-2 */
+    border: 1px solid #d1d5db; /* border border-gray-300 */
+    border-radius: 0.5rem; /* rounded-lg */
+    /* focus:ring-blue-500 focus:border-blue-500 serão configurados no index.css para globalidade ou em um arquivo de variáveis */
+    box-sizing: border-box; /* Garante que padding não aumente a largura */
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: #3b82f6; /* blue-500 */
+    box-shadow: 0 0 0 1px #3b82f6; /* ring-blue-500 */
+}

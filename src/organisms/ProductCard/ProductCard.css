@@ -1,0 +1,74 @@
+/* src/organisms/ProductCard/ProductCard.css */
+.product-card {
+    background-color: white;
+    border-radius: 0.75rem; /* rounded-xl */
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); /* shadow-md */
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* transition duration-300 */
+    cursor: pointer;
+    display: flex; /* Para garantir que o conteúdo do card se alinhe */
+    flex-direction: column; /* Conteúdo em coluna */
+}
+
+.product-card-image-wrapper {
+    position: relative;
+    width: 100%;
+    /* REMOVA: padding-top: 75%;  */
+    /* REMOVA: height: 0; */
+    
+    /* ADICIONE ESTA LINHA: Define uma altura fixa para a área da imagem */
+    height: 10rem; /* Aproximadamente 160px. Ajuste este valor conforme desejar (Ex: 8rem, 10rem, 12rem) */
+    overflow: hidden;
+}
+
+.product-card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer, cortando se necessário */
+}
+
+.product-card-content {
+    padding: 1rem; /* p-4 */
+    flex-grow: 1; /* Faz com que o conteúdo ocupe o espaço restante */
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.25rem; /* mb-1 */
+}
+
+.product-card-title {
+    font-weight: 600; /* font-semibold */
+    font-size: 1.125rem; /* text-lg */
+    color: #1f2937; /* text-gray-800 */
+    flex-grow: 1; /* Título pode crescer */
+    margin-right: 0.5rem; /* Espaço entre título e preço */
+}
+
+.product-card-price {
+    font-weight: 700; /* font-bold */
+    color: #3b82f6; /* text-blue-500 */
+    white-space: nowrap; /* Evita que o preço quebre linha */
+}
+
+.color-thumbnails-container {
+    margin-top: 0.75rem;
+    margin-bottom: 1rem; /* Adiciona um pequeno espaço abaixo das miniaturas */
+}
+
+
+.product-card-actions {
+    margin-top: auto; /* Empurra os botões para baixo */
+    padding-top: 1rem; /* pt-4 */
+    border-top: 1px solid #e5e7eb; /* border-t border-gray-100 */
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem; /* gap-2 */
+}

@@ -1,0 +1,45 @@
+/* src/atoms/Modal/Modal.css */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 50;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.modal-overlay.invisible {
+    visibility: hidden;
+}
+.modal-overlay.visible {
+    visibility: visible;
+}
+.modal-overlay.opacity-0 {
+    opacity: 0;
+}
+.modal-overlay.opacity-100 {
+    opacity: 1;
+}
+
+.modal-content-wrapper {
+    background-color: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 28rem;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    /* ADD THIS: Consistent padding for the content inside */
+    padding: 1.5rem; /* This replaces the child selector padding rule */
+}
+
+/* REMOVE THIS RULE if you've added padding directly to modal-content-wrapper */
+/* .modal-content-wrapper > div {
+    padding: 1.5rem;
+} */

@@ -1,0 +1,73 @@
+/* src/organisms/ProductFormModal/ProductFormModal.css */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem; /* Increased margin-bottom for better separation from form */
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.close-modal-button {
+    color: #6b7280;
+    margin-left: 1rem; /* Add some space if title is long */
+}
+
+.close-modal-button:hover {
+    color: #374151;
+}
+
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem; /* THIS IS KEY: Adds consistent vertical spacing between all direct children of the form */
+}
+
+.form-images-section {
+    /* No need for margin-top/bottom here if product-form handles gap */
+}
+
+.form-images-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem; /* Ensure label has space below it */
+}
+
+.image-upload-groups-container {
+    /* No need for specific spacing here, ImageUploadGroup's margin-top handles it */
+}
+
+.add-image-button {
+    color: #3b82f6;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background: none;
+    border: none;
+    padding: 0.5rem 0; /* Adjusted padding */
+    box-shadow: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    align-self: flex-start; /* Align button to the left */
+}
+
+.add-image-button:hover {
+    color: #2563eb;
+}
+
+.form-actions {
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb; /* Add a subtle divider */
+    margin-top: 1rem; /* Ensure space above action buttons */
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+}

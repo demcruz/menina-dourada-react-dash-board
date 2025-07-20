@@ -1,0 +1,56 @@
+/* src/atoms/Button/Button.css */
+.button {
+    padding: 0.5rem 1.5rem; /* px-6 py-2 */
+    border-radius: 0.5rem; /* rounded-lg */
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1); /* shadow-md */
+    transition: background-color 0.2s ease-in-out, transform 0.1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* gap-2 */
+    cursor: pointer;
+    border: none;
+    font-weight: 500;
+}
+
+.button.primary {
+    background-color: #3b82f6; /* bg-blue-500 */
+    color: white;
+}
+
+.button.primary:hover {
+    background-color: #2563eb; /* hover:bg-blue-600 */
+}
+
+.button.secondary {
+    border: 1px solid #d1d5db; /* border border-gray-300 */
+    color: #4b5563; /* text-gray-700 */
+    background-color: white;
+}
+
+.button.secondary:hover {
+    background-color: #f9fafb; /* hover:bg-gray-50 */
+}
+
+/* Estilos específicos para botões com apenas ícone (como os de editar/excluir e fechar modal) */
+.button.icon-only {
+    padding: 0.25rem; /* p-1 */
+    border-radius: 9999px; /* rounded-full */
+    background: none;
+    border: none;
+    color: #9ca3af; /* text-gray-400 */
+    box-shadow: none; /* Remove shadow para ícones */
+}
+
+.button.icon-only:hover {
+    color: #4b5563; /* hover:text-gray-600 */
+}
+
+.button.icon-only.red-hover:hover {
+    color: #ef4444; /* hover:text-red-700 */
+}
+
+.button-icon {
+    width: 1.25rem; /* h-5 w-5 */
+    height: 1.25rem;
+}

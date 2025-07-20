@@ -1,0 +1,75 @@
+/* src/molecules/ImageUploadGroup/ImageUploadGroup.css */
+.image-upload-group {
+    border: 1px dashed #d1d5db;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    /* margin-top: 0.5rem; -> This can be removed if product-form handles gap */
+}
+
+.image-upload-content {
+    display: flex;
+    align-items: flex-end; /* Keep this to align items to the bottom if content height varies */
+    gap: 1rem;
+}
+
+.image-input-section {
+    flex: 1;
+    /* Ensure label and input are stacked */
+    display: flex;
+    flex-direction: column;
+}
+
+.image-upload-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.25rem;
+}
+
+.image-upload-field {
+    width: 100%;
+    padding: 0.5rem 0;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    box-sizing: border-box;
+    font-size: 0.875rem;
+    color: #4b5563;
+}
+
+.image-upload-field:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.color-input-section {
+    flex: 1;
+    /* Ensure label and input are stacked */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Ensure the trash button aligns well */
+.remove-image-button {
+    margin-left: 0.5rem; /* Add a little space */
+    /* REMOVE margin-bottom: 0.5rem; as align-items: flex-end handles it better */
+}
+
+.image-preview-wrapper {
+  margin-top: 0.5rem;
+  width: 100px; /* Consistent size for preview */
+  height: 100px;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
