@@ -4,7 +4,8 @@ import DashboardLayout from '../templates/DashboardLayout/DashboardLayout';
 import ProductListingTemplate from '../templates/ProductListingTemplate/ProductListingTemplate';
 import ProductFormModal from '../organisms/ProductFormModal/ProductFormModal';
 import ConfirmationModal from '../organisms/ConfirmationModal/ConfirmationModal';
-import { getProducts, createProduct, updateProduct, deleteProduct } from '../api/productService';
+// Removendo uploadImageToS3 e deleteImageFromS3 daqui, pois o backend fará isso
+import { getProducts, createProduct, updateProduct, deleteProduct } from '../api/productService'; // <<<< deleteImageFromS3 removido
 import Button from '../atoms/Button/Button';
 
 const ProductDashboardPage = () => {
@@ -13,23 +14,23 @@ const ProductDashboardPage = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [page, setPage] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [pageSize, setPageSize] = useState(8);
-  const [totalPages, setTotalPages] = useState(0);
+  const [totalPages, setTotalPages] = useState(0); // Renomeado para evitar conflito
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
 
   const [successMessage, setSuccessMessage] = useState(null);
 
-  // Função para exibir mensagem de sucesso temporária
   const showSuccessMessage = (message) => {
     setSuccessMessage(message);
     const timer = setTimeout(() => {
       setSuccessMessage(null);
-    }, 3000); // Mensagem desaparece após 3 segundos
-    return () => clearTimeout(timer); // Limpa o timer se o componente for desmontado
+    }, 3000);
+    return () => clearTimeout(timer);
   };
 
   const fetchProducts = useCallback(async () => {
@@ -41,7 +42,7 @@ const ProductDashboardPage = () => {
       setTotalPages(response.totalPages);
     } catch (err) {
       console.error("Falha ao carregar produtos:", err);
-      setError("Não foi possível carregar os produtos. Verifique se o backend Java está rodando e o CORS está configurado.");
+      setError("Não foi possível carregar os produtos. Verifique se o backend Java está rodando e o CORS está configurado corretamente.");
     } finally {
       setIsLoading(false);
     }
@@ -60,19 +61,16 @@ const ProductDashboardPage = () => {
     const productFromApi = products.find(p => p.id === productId);
 
     if (productFromApi) {
-      // Transforma a estrutura da API (aninhada) para o formato "plano" que o formulário espera
       const transformedProduct = {
         id: productFromApi.id,
         name: productFromApi.nome,
-        description: productFromApi.descricao,
-        price: productFromApi.variacoes?.[0]?.preco || 0, // Pega o preço da primeira variação
+        // description: productFromApi.descricao || '', // COMENTADO: Descomentar quando a API estiver pronta
+        price: productFromApi.variacoes?.[0]?.preco || 0,
         images: productFromApi.variacoes.map(variation => ({
-          // Pega a URL da imagem principal ou a primeira imagem da variação
           src: variation.imagens?.find(img => img.isPrincipal)?.url || variation.imagens?.[0]?.url || '',
-          // Pega o texto alternativo da imagem principal ou da primeira imagem
           alt: variation.imagens?.find(img => img.isPrincipal)?.altText || variation.imagens?.[0]?.altText || '',
           colorName: variation.cor,
-          file: null // Não há arquivo real, apenas a URL da imagem existente
+          file: null // Para imagens existentes, não há um objeto File novo
         }))
       };
       setEditingProduct(transformedProduct);
@@ -89,12 +87,15 @@ const ProductDashboardPage = () => {
 
   const handleConfirmDelete = async () => {
     if (productToDelete) {
-      setIsLoading(true); // Ativa loading para a exclusão
-      setError(null); // Limpa erros anteriores
+      setIsLoading(true);
+      setError(null);
       try {
-        await deleteProduct(productToDelete);
-        showSuccessMessage('Produto excluído com sucesso!'); // Exibe mensagem de sucesso
-        fetchProducts(); // Recarrega a lista
+        // A API de backend é responsável por deletar as imagens do S3 ao deletar o produto.
+        // Não precisamos chamar deleteImageFromS3 aqui no frontend para cada imagem.
+        // Apenas chamamos a API de exclusão do produto.
+        await deleteProduct(productToDelete); 
+        showSuccessMessage('Produto excluído com sucesso!');
+        fetchProducts();
         setIsConfirmModalOpen(false);
         setProductToDelete(null);
       } catch (err) {
@@ -103,78 +104,78 @@ const ProductDashboardPage = () => {
         setIsConfirmModalOpen(false);
         setProductToDelete(null);
       } finally {
-        setIsLoading(false); // Desativa loading
+        setIsLoading(false);
       }
     }
   };
 
   const handleSaveProduct = async (productDataFromForm) => {
-    setIsLoading(true); // Ativa loading para salvar
+    setIsLoading(true);
     setError(null);
     try {
-      // --- INÍCIO DA MUDANÇA PARA TRATAR O ERRO "CANNOT READ PROPERTIES OF UNDEFINED (READING 'MAP')" ---
-      // Garante que productDataFromForm.images é um array.
-      // Se for undefined ou null, ele se torna um array vazio, evitando o erro .map().
       const imagesToProcess = productDataFromForm.images || [];
-      // --- FIM DA MUDANÇA ---
+      // Filtra APENAS os objetos File reais que foram selecionados pelo usuário
+      const filesToUpload = imagesToProcess.filter(img => img.file); 
 
-      const transformedDataForApi = {
+      // Mapeia as imagens do formulário para o formato de variações que a API espera.
+      // Para novas imagens (com 'file'), a URL será null/vazia aqui, pois o backend irá gerá-la.
+      // Para imagens existentes (sem 'file'), a URL original será mantida.
+      const transformedVariationsForApi = imagesToProcess.map((imgData, index) => {
+        const originalVariation = editingProduct?.variacoes?.[index];
+        return {
+          id: originalVariation?.id || null, // Reusa o ID da variação existente se houver
+          cor: imgData.colorName,
+          tamanho: "Único", // Pode precisar ser dinâmico no futuro
+          preco: productDataFromForm.price,
+          estoque: 100, // Pode precisar ser dinâmico no futuro
+          imagens: [
+            {
+              // Se for um novo arquivo, a URL será gerada pelo backend.
+              // Se for uma imagem existente, usamos a URL original.
+              url: imgData.file ? null : (imgData.src || null), 
+              altText: imgData.alt || `${productDataFromForm.name} - Cor ${imgData.colorName}`,
+              isPrincipal: true
+            }
+          ]
+        };
+      });
+
+      const productDataJson = {
         id: productDataFromForm.id,
         nome: productDataFromForm.name,
-        descricao: productDataFromForm.description || 'Descrição padrão do produto.',
+        // descricao: productDataFromForm.description, // COMENTADO: Descomentar quando a API estiver pronta
         ativo: true,
-        // Agora usamos 'imagesToProcess' que é garantidamente um array
-        variacoes: imagesToProcess.map((img, index) => {
-          // Lógica para mapear variações existentes para edição
-          // Acessa as variações do 'editingProduct' original para tentar reutilizar IDs
-          const originalVariation = editingProduct?.variacoes?.[index];
-          return {
-            id: originalVariation?.id || null, // Reusa o ID da variação existente se houver
-            cor: img.colorName,
-            tamanho: "Único", // Valor padrão, pode ser um campo no formulário futuramente
-            preco: productDataFromForm.price, // Usa o preço do formulário para todas as variações criadas
-            estoque: 100, // Valor padrão de estoque, pode ser um campo no formulário futuramente
-            imagens: [
-              {
-                url: img.filePreviewUrl || img.src, // Usa a URL de preview (para novos arquivos) ou a URL existente (para edição)
-                altText: img.alt || `${productDataFromForm.name} - Cor ${img.colorName}`,
-                isPrincipal: true // Define como principal por padrão para simplificar
-              }
-            ]
-          };
-        })
+        variacoes: transformedVariationsForApi // <<<< Variável usada corretamente aqui
       };
 
-      if (transformedDataForApi.id) {
-        // Se for edição, o ID já está no objeto transformedDataForApi
-        const { id, ...dataToUpdate } = transformedDataForApi; // Extrai o ID para passar na URL
-        await updateProduct(id, dataToUpdate);
-        showSuccessMessage('Produto atualizado com sucesso!'); // Mensagem de sucesso
+      // 1. Chama a API de produto (create ou update)
+      // Passa o JSON do produto E os arquivos reais (File objects)
+      if (productDataJson.id) {
+        // Para atualização (PUT), o ID é passado na URL, e o JSON e arquivos no corpo
+        await updateProduct(productDataJson.id, productDataJson, filesToUpload);
+        showSuccessMessage('Produto atualizado com sucesso!');
       } else {
-        // Se for criação, não há ID no objeto (será gerado pelo backend)
-        await createProduct(transformedDataForApi);
-        showSuccessMessage('Produto cadastrado com sucesso!'); // Mensagem de sucesso
+        // Para criação (POST), o JSON e arquivos no corpo
+        await createProduct(productDataJson, filesToUpload);
+        showSuccessMessage('Produto cadastrado com sucesso!');
       }
-      setIsModalOpen(false); // Fecha o modal após salvar
-      fetchProducts(); // Recarrega a lista de produtos para ver as alterações
+      setIsModalOpen(false);
+      fetchProducts();
     } catch (err) {
       console.error("Erro ao salvar produto:", err.response?.data || err.message || err);
-      // Exibe a mensagem de erro da API ou uma genérica
       setError(err.response?.data?.message || 'Falha ao salvar produto.');
     } finally {
-      setIsLoading(false); // Desativa loading
+      setIsLoading(false);
     }
   };
 
   return (
     <DashboardLayout onAddProduct={handleAddProduct}>
-      {/* Mensagem de sucesso */}
       {successMessage && <p className="success-message">{successMessage}</p>}
 
       {isLoading && <p className="loading-message">Carregando produtos...</p>}
       {error && <p className="error-message">{error}</p>}
       
-      {/* Exibir a listagem de produtos SOMENTE se não estiver carregando E não houver erro */}
       {!isLoading && !error && (
         <ProductListingTemplate
           products={products}
@@ -183,7 +184,6 @@ const ProductDashboardPage = () => {
         />
       )}
       
-      {/* Controles de Paginação (visíveis apenas se não estiver carregando, sem erro e tiver produtos) */}
       {!isLoading && !error && products.length > 0 && (
         <div className="pagination-controls">
           <Button

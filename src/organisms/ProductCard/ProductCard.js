@@ -12,50 +12,60 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
     return null;
   }
 
-  // --- Adapting to Java API structure ---
   const productName = product.nome || 'Nome Indisponível';
 
-  // Get price from the first variation, if available
   const firstVariation = product.variacoes && product.variacoes.length > 0 ? product.variacoes[0] : null;
   const productPrice = firstVariation && firstVariation.preco !== undefined && firstVariation.preco !== null
     ? firstVariation.preco
-    : 0; // Default to 0 if price is missing or variation is not found
+    : 0;
 
-  // Get image from the first variation's first image
+  // Inicializa imageUrl com um placeholder válido.
+  // Isso garante que .includes() sempre seja chamado em uma string.
   let imageUrl = 'https://via.placeholder.com/500x375?text=Produto+sem+imagem';
   let imageAlt = 'Produto sem imagem';
-  let colorsForThumbnails = []; // To collect all colors for thumbnails
+  let colorsForThumbnails = [];
 
- if (product.variacoes && product.variacoes.length > 0) {
+  if (product.variacoes && product.variacoes.length > 0) {
+    // Percorre as variações para coletar URLs e cores para os thumbnails
     product.variacoes.forEach(variation => {
-      // Collect colors for thumbnails from all variations
       if (variation.cor) {
-        // Find the principal image for this variation, or take the first one
         const principalImage = variation.imagens?.find(img => img.isPrincipal) || variation.imagens?.[0];
         
         colorsForThumbnails.push({
-          src: principalImage?.url || 'https://via.placeholder.com/50x50?text=?',
+          src: principalImage?.url || 'https://via.placeholder.com/50x50?text=?', // Garante que src seja string
           colorName: variation.cor
         });
       }
 
-        if (imageUrl.includes('Produto+sem+imagem')) { // Only update if still using placeholder
-        const currentPrincipalImage = variation.imagens?.find(img => img.isPrincipal);
-        if (currentPrincipalImage) {
-            imageUrl = currentPrincipalImage.url;
-            imageAlt = currentPrincipalImage.altText || `Imagem de ${variation.cor}`;
-        } else if (variation.imagens?.[0]) { // If no principal, take first available image
-            imageUrl = variation.imagens[0].url;
-            imageAlt = variation.imagens[0].altText || `Imagem de ${variation.cor}`;
-        }
+      // Lógica para definir a imagem principal do card.
+      // Prioriza a primeira imagem principal encontrada entre as variações.
+      // Se ainda estiver com o placeholder E houver uma imagem principal na variação atual, use-a.
+      if (imageUrl.includes('Produto+sem+imagem')) { // Verifica se ainda estamos usando o placeholder
+          if (variation.imagens && variation.imagens.length > 0) { // Garante que o array de imagens existe
+              const currentPrincipalImage = variation.imagens.find(img => img.isPrincipal);
+              const currentFirstImage = variation.imagens[0];
+
+              // Se houver uma imagem principal com URL válida, use-a
+              if (currentPrincipalImage && currentPrincipalImage.url) {
+                  imageUrl = currentPrincipalImage.url;
+                  imageAlt = currentPrincipalImage.altText || `Imagem de ${variation.cor}`;
+              } 
+              // Senão, se houver uma primeira imagem com URL válida, use-a
+              else if (currentFirstImage && currentFirstImage.url) {
+                  imageUrl = currentFirstImage.url;
+                  imageAlt = currentFirstImage.altText || `Imagem de ${variation.cor}`;
+              }
+              // Se nenhuma URL válida for encontrada aqui, imageUrl permanece com o placeholder inicial
+          }
       }
-    }); // <-- ADD SEMICOLON HERE!
-  }
-  // Fallback if no specific principal image was set across all variations
-  if (imageUrl.includes('Produto+sem+imagem') && product.variacoes?.[0]?.imagens?.[0]?.url) { // Added ?. for safer access
-      imageUrl = product.variacoes[0].imagens[0].url;
-      imageAlt = product.variacoes[0].imagens[0].altText || `Imagem de ${product.variacoes[0].cor}`;
-  
+    });
+
+    // Fallback final: Se após iterar todas as variações, imageUrl ainda for o placeholder
+    // E se a primeira variação tiver uma imagem com URL válida, use-a.
+    if (imageUrl.includes('Produto+sem+imagem') && product.variacoes[0]?.imagens?.[0]?.url) {
+        imageUrl = product.variacoes[0].imagens[0].url;
+        imageAlt = product.variacoes[0].imagens[0].altText || `Imagem de ${product.variacoes[0].cor}`;
+    }
   }
 
   const displayPrice = productPrice.toFixed(2).replace('.', ',');
@@ -63,6 +73,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
   return (
     <div className="product-card">
       <div className="product-card-image-wrapper">
+        {/* Garante que src sempre receba uma string válida */}
         <img src={imageUrl} alt={imageAlt} className="product-card-image" />
       </div>
       <div className="product-card-content">

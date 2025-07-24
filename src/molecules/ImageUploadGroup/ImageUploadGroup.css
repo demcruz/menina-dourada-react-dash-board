@@ -3,18 +3,18 @@
     border: 1px dashed #d1d5db;
     padding: 1rem;
     border-radius: 0.5rem;
-    /* margin-top: 0.5rem; -> This can be removed if product-form handles gap */
 }
 
 .image-upload-content {
     display: flex;
-    align-items: flex-end; /* Keep this to align items to the bottom if content height varies */
-    gap: 1rem;
+    flex-wrap: wrap; /* Permite que os itens quebrem linha em telas menores */
+    align-items: center; /* Alinha os itens verticalmente ao centro */
+    gap: 1rem; /* Espaçamento entre as seções */
 }
 
 .image-input-section {
-    flex: 1;
-    /* Ensure label and input are stacked */
+    flex: 2; /* Dá mais espaço para a seção de imagem */
+    min-width: 250px; /* Garante que a seção de imagem não fique muito estreita */
     display: flex;
     flex-direction: column;
 }
@@ -27,38 +27,91 @@
     margin-bottom: 0.25rem;
 }
 
-.image-upload-field {
-    width: 100%;
-    padding: 0.5rem 0;
+/* --- ESTILOS PARA O NOVO BOTÃO DE UPLOAD PERSONALIZADO --- */
+.custom-file-input-wrapper {
+    display: flex;
+    align-items: center;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
-    box-sizing: border-box;
-    font-size: 0.875rem;
-    color: #4b5563;
+    overflow: hidden; /* Garante que nada vaze */
+    height: 2.5rem; /* Altura padrão de inputs */
+    width: 100%; /* Garante que o wrapper ocupe a largura total disponível */
 }
 
-.image-upload-field:focus {
-    outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1px #3b82f6;
+.image-upload-field-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
 }
+
+.custom-file-upload-button {
+    background-color: #e5e7eb;
+    color: #4b5563;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-right: 1px solid #d1d5db;
+    transition: background-color 0.2s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap; /* Garante que o texto não quebre linha */
+    flex-shrink: 0; /* Impede que o botão encolha */
+}
+
+.custom-file-upload-button:hover {
+    background-color: #d1d5db;
+}
+
+.file-name-display {
+    padding: 0 0.75rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+}
+/* --- FIM DOS ESTILOS DE UPLOAD PERSONALIZADO --- */
+
 
 .color-input-section {
-    flex: 1;
-    /* Ensure label and input are stacked */
+    flex: 1; /* Permite que a seção de cor cresça */
+    min-width: 150px; /* Largura mínima para o campo de cor */
+    max-width: 200px; /* Largura máxima para o campo de cor */
     display: flex;
     flex-direction: column;
 }
 
-/* Ensure the trash button aligns well */
-.remove-image-button {
-    margin-left: 0.5rem; /* Add a little space */
-    /* REMOVE margin-bottom: 0.5rem; as align-items: flex-end handles it better */
+.color-input-section .input-field { /* Estiliza o input dentro da seção de cor */
+    width: 100%; /* Garante que o input de cor ocupe a largura total da sua seção */
+    box-sizing: border-box; /* Inclui padding e borda na largura */
 }
+
+
+.remove-image-button {
+    height: 2.5rem; /* Altura do input padrão */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 2.5rem; /* Largura igual à altura para um quadrado */
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    flex-shrink: 0; /* Impede que o botão encolha */
+}
+
+.remove-image-button:hover {
+    border-color: #d1d5db;
+}
+
 
 .image-preview-wrapper {
   margin-top: 0.5rem;
-  width: 100px; /* Consistent size for preview */
+  width: 100px;
   height: 100px;
   overflow: hidden;
   border-radius: 0.25rem;

@@ -3,7 +3,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem; /* Increased margin-bottom for better separation from form */
+    margin-bottom: 1.5rem;
 }
 
 .modal-title {
@@ -14,7 +14,7 @@
 
 .close-modal-button {
     color: #6b7280;
-    margin-left: 1rem; /* Add some space if title is long */
+    margin-left: 1rem;
 }
 
 .close-modal-button:hover {
@@ -24,7 +24,7 @@
 .product-form {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem; /* THIS IS KEY: Adds consistent vertical spacing between all direct children of the form */
+    gap: 1.25rem;
 }
 
 .form-images-section {
@@ -36,7 +36,7 @@
     font-size: 0.875rem;
     font-weight: 500;
     color: #374151;
-    margin-bottom: 0.5rem; /* Ensure label has space below it */
+    margin-bottom: 0.5rem;
 }
 
 .image-upload-groups-container {
@@ -44,29 +44,48 @@
 }
 
 .add-image-button {
-    color: #3b82f6;
-    font-size: 0.875rem;
-    font-weight: 500;
+    /* Overrides from Button.css to ensure desired appearance */
+    background-color: #3b82f6; /* Blue as per user's image */
+    color: white; /* Text color */
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem; /* Standard padding, can be adjusted */
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: background-color 0.2s ease; /* Smooth transition for hover */
+
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    background: none;
-    border: none;
-    padding: 0.5rem 0; /* Adjusted padding */
-    box-shadow: none;
-    cursor: pointer;
-    transition: color 0.2s ease;
-    align-self: flex-start; /* Align button to the left */
+    justify-content: center; /* Center content horizontally */
+    gap: 0.25rem; /* Space between icon and text */
+    
+    /* Crucial properties for text not disappearing on hover */
+    white-space: nowrap; /* Ensures text stays on a single line */
+    flex-shrink: 0; /* Prevents the button from shrinking below its content size */
+    flex-grow: 0; /* Prevents the button from growing unnecessarily */
+    
+    /* Ensures the button takes exactly the space its content needs */
+    width: fit-content; /* THIS IS KEY: Let content dictate the width */
+    min-width: 160px; /* A reasonable minimum width to ensure text fits well */
+    
+    /* Handles text overflow gracefully if the button is still constrained */
+    overflow: hidden; /* Hides content that overflows the element's box */
+    text-overflow: ellipsis; /* Displays an ellipsis (...) to indicate clipped text */
+    
+    /* Explicitly reset transform to prevent any unexpected sizing changes on hover */
+    transform: none; 
+    box-sizing: border-box; /* Ensures padding is included within the element's total width */
 }
 
 .add-image-button:hover {
-    color: #2563eb;
+    background-color: #2563eb; /* Darker blue on hover */
+    color: white; /* Ensure text remains white */
+    /* No changes to width, padding, or overflow on hover */
 }
 
 .form-actions {
     padding-top: 1rem;
-    border-top: 1px solid #e5e7eb; /* Add a subtle divider */
-    margin-top: 1rem; /* Ensure space above action buttons */
+    border-top: 1px solid #e5e7eb;
+    margin-top: 1rem;
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
