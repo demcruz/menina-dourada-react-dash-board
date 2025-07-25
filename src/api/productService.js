@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Nova URL base da sua API Java (IP da EC2)
-const API_BASE_URL = 'http://18.228.9.73:9090/api';
+const API_BASE_URL = '/api';
 
 // Função para buscar todos os produtos com paginação
 export const getProducts = async (page = 0, size = 8) => {
