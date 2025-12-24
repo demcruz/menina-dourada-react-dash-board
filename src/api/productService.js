@@ -59,7 +59,7 @@ export const createProduct = async (productData, files = []) => {
     // Adiciona o objeto JSON do produto como uma String
     formData.append('productData', JSON.stringify(productData));
 
-    // CORREAØAŸO AQUI: aceita File direto ou { file: File, colorName: '...' }
+    // CORREAï¿½Aï¿½O AQUI: aceita File direto ou { file: File, colorName: '...' }
     files.forEach((fileEntry) => {
       const file = fileEntry instanceof File ? fileEntry : fileEntry?.file;
       if (file) {
@@ -69,7 +69,7 @@ export const createProduct = async (productData, files = []) => {
 
     const response = await axios.post(`${API_BASE_URL}/produtos`, formData, {
       headers: {
-        // O Content-Type serA­ automaticamente definido como multipart/form-data pelo navegador ao usar FormData
+        // O Content-Type serAï¿½ automaticamente definido como multipart/form-data pelo navegador ao usar FormData
       }
     });
     return response.data;
@@ -96,11 +96,20 @@ export const getProductById = async (productId) => {
 // files: array de objetos que contÃªm o File real (ex: [{ file: File, colorName: '...' }])
 export const updateProduct = async (productId, updatedProductData, files = []) => {
   try {
+    if (!files || files.length === 0) {
+      const response = await axios.put(`${API_BASE_URL}/produtos/${productId}`, updatedProductData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    }
+
     const formData = new FormData();
     // Adiciona o objeto JSON do produto atualizado como uma String
     formData.append('productData', JSON.stringify(updatedProductData));
 
-    // CORREAØAŸO AQUI: aceita File direto ou { file: File, colorName: '...' }
+    // CORREAOAYO AQUI: aceita File direto ou { file: File, colorName: '...' }
     files.forEach((fileEntry) => {
       const file = fileEntry instanceof File ? fileEntry : fileEntry?.file;
       if (file) {
@@ -116,36 +125,11 @@ export const updateProduct = async (productId, updatedProductData, files = []) =
     return response.data;
   } catch (error) {
     console.error(`Erro ao atualizar produto com ID ${productId}:`, error);
+    console.error(`Erro ao atualizar produto com ID ${productId}:`, error);
     throw error;
   }
 };
 
-// Funcao para atualizar uma variacao existente de um produto (com suporte a FormData para imagens)
-// productId: ID do produto
-// variationId: ID da variacao
-// updatedVariationData: objeto JSON com cor, tamanho, preco, estoque, imagens
-// files: array de objetos que contem o File real (ex: [File] ou [{ file: File }])
-export const updateProductVariation = async (productId, variationId, updatedVariationData, files = []) => {
-  try {
-    const formData = new FormData();
-    formData.append('variationData', JSON.stringify(updatedVariationData));
-
-    files.forEach((fileEntry) => {
-      const file = fileEntry instanceof File ? fileEntry : fileEntry?.file;
-      if (file) {
-        formData.append('files', file);
-      }
-    });
-
-    const response = await axios.put(`${API_BASE_URL}/produtos/${productId}/variacoes/${variationId}`, formData, {
-      headers: {}
-    });
-    return response.data;
-  } catch (error) {
-    console.error(`Erro ao atualizar variacao ${variationId} do produto ${productId}:`, error);
-    throw error;
-  }
-};
 
 // Funcao para deletar um produto
 export const deleteProduct = async (productId) => {

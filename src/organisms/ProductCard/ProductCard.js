@@ -13,7 +13,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
     return null;
   }
 
-  const productName = product.nome || product.name || 'Nome Indisponível';
+  const productName = product.nome || product.name || 'Nome indisponível';
   const productDescription = product.descricao || product.description || '';
 
   const firstVariation = product.variacoes && product.variacoes.length > 0 ? product.variacoes[0] : null;
@@ -21,14 +21,14 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
     ? firstVariation.preco
     : 0;
 
-  // Inicializa imageUrl com um placeholder válido.
+  // Inicializa imageUrl com um placeholder vÃ¡lido.
   // Isso garante que .includes() sempre seja chamado em uma string.
   let imageUrl = 'https://via.placeholder.com/500x375?text=Produto+sem+imagem';
   let imageAlt = 'Produto sem imagem';
   let colorsForThumbnails = [];
 
   if (product.variacoes && product.variacoes.length > 0) {
-    // Percorre as variações para coletar URLs e cores para os thumbnails
+    // Percorre as variaÃ§Ãµes para coletar URLs e cores para os thumbnails
     product.variacoes.forEach(variation => {
       if (variation.cor) {
         const principalImage = variation.imagens?.find(img => img.isPrincipal) || variation.imagens?.[0];
@@ -40,9 +40,9 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
         });
       }
 
-      // Lógica para definir a imagem principal do card.
-      // Prioriza a primeira imagem principal encontrada entre as variações.
-      // Se ainda estiver com o placeholder E houver uma imagem principal na variação atual, use-a.
+      // LÃ³gica para definir a imagem principal do card.
+      // Prioriza a primeira imagem principal encontrada entre as variaÃ§Ãµes.
+      // Se ainda estiver com o placeholder E houver uma imagem principal na variaÃ§Ã£o atual, use-a.
       if (imageUrl.includes('Produto+sem+imagem')) { // Verifica se ainda estamos usando o placeholder
           if (variation.imagens && variation.imagens.length > 0) { // Garante que o array de imagens existe
               const currentPrincipalImage = variation.imagens.find(img => img.isPrincipal);
@@ -65,8 +65,8 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
       }
     });
 
-    // Fallback final: Se após iterar todas as variações, imageUrl ainda for o placeholder
-    // E se a primeira variação tiver uma imagem com URL válida, use-a.
+    // Fallback final: Se apÃ³s iterar todas as variaÃ§Ãµes, imageUrl ainda for o placeholder
+    // E se a primeira variaÃ§Ã£o tiver uma imagem com URL vÃ¡lida, use-a.
     const fallbackImage = product.variacoes[0]?.imagens?.[0];
     const fallbackUrl = pickImageUrl(fallbackImage);
     if (imageUrl.includes('Produto+sem+imagem') && fallbackUrl) {
@@ -80,7 +80,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
   return (
     <div className="product-card">
       <div className="product-card-image-wrapper">
-        {/* Garante que src sempre receba uma string válida */}
+        {/* Garante que src sempre receba uma string vÃ¡lida */}
         <img src={imageUrl} alt={imageAlt} className="product-card-image" />
       </div>
       <div className="product-card-content">
@@ -106,4 +106,4 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
   );
 };
 
-export default ProductCard;
+export default React.memo(ProductCard);

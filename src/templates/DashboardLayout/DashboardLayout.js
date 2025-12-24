@@ -8,7 +8,7 @@ const menuItems = [
   { id: 'pedidos', label: 'Pedidos' },
   { id: 'clientes', label: 'Clientes' },
   { id: 'estoque', label: 'Estoque' },
-  { id: 'configuracoes', label: 'Configuracoes' }
+  { id: 'configuracoes', label: 'Configurações' }
 ];
 
 const DashboardLayout = ({ children, onAddProduct }) => {
@@ -70,14 +70,14 @@ const DashboardLayout = ({ children, onAddProduct }) => {
             )}
             <div className="brand-logo" aria-hidden="true" />
             <div>
-              <h1 className="dashboard-title">Moda Praia Dashboard</h1>
+              <h1 className="dashboard-title">Dashboard - MD</h1>
               <p className="dashboard-subtitle">Gerencie seus produtos de moda praia</p>
             </div>
           </div>
 
           <div className="topbar-right">
             <div className="user-chip">
-              <div className="user-name">Usuario Logado</div>
+              <div className="user-name">Usuário logado</div>
               <button type="button" className="logout-button">Sair</button>
             </div>
             <Button variant="primary" onClick={onAddProduct} icon={PlusIcon}>

@@ -79,8 +79,10 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, initialData = null, isSav
       alert('O nome do produto é obrigatório.');
       return;
     }
-    const priceValue = parseFloat(productPrice);
-    if (isNaN(priceValue) || priceValue <= 0) {
+    const normalizedPrice = productPrice.replace(",", ".").trim();
+    const priceValue = Number.parseFloat(normalizedPrice);
+    const roundedPrice = Math.round(priceValue * 100) / 100;
+    if (Number.isNaN(roundedPrice) || roundedPrice <= 0) {
       alert('O preço do produto deve ser um número válido e maior que zero.');
       return;
     }
@@ -92,7 +94,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, initialData = null, isSav
     const productDataForParent = {
       id: initialData ? initialData.id : null,
       name: productName,
-      price: priceValue,
+      price: roundedPrice,
       description: productDescription.trim(),
       images: productImages.map((img) => ({
         src: img.filePreviewUrl || img.src,
@@ -125,7 +127,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, initialData = null, isSav
             required
           />
           <FormField
-            label="PreAo (R$)"
+            label="Preço (R$)"
             id="productPrice"
             type="number"
             min="0"
@@ -135,7 +137,7 @@ const ProductFormModal = ({ isOpen, onClose, onSubmit, initialData = null, isSav
             required
           />
           <FormField
-            label="Descricao do Produto"
+            label="Descrição do Produto"
             id="productDescription"
             value={productDescription}
             onChange={(e) => setProductDescription(e.target.value)}

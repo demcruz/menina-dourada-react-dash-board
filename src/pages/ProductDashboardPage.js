@@ -4,8 +4,8 @@ import DashboardLayout from '../templates/DashboardLayout/DashboardLayout';
 import ProductListingTemplate from '../templates/ProductListingTemplate/ProductListingTemplate';
 import ProductFormModal from '../organisms/ProductFormModal/ProductFormModal';
 import ConfirmationModal from '../organisms/ConfirmationModal/ConfirmationModal';
-// Removendo uploadImageToS3 e deleteImageFromS3 daqui, pois o backend fará isso
-import { getProducts, createProduct, updateProduct, updateProductVariation, deleteProduct } from '../api/productService'; // <<<< deleteImageFromS3 removido
+// Removendo uploadImageToS3 e deleteImageFromS3 daqui, pois o backend farÃ¡ isso
+import { getProducts, createProduct, updateProduct, deleteProduct } from '../api/productService'; // <<<< deleteImageFromS3 removido
 import Button from '../atoms/Button/Button';
 import { pickImageUrl } from '../utils/imageUtils';
 
@@ -16,6 +16,7 @@ const ProductDashboardPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState(null);
 
   const [page, setPage] = useState(0);
@@ -30,6 +31,9 @@ const ProductDashboardPage = () => {
 
   const showSuccessMessage = (message) => {
     setSuccessMessage(message);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     const timer = setTimeout(() => {
       setSuccessMessage(null);
     }, 3000);
@@ -75,7 +79,7 @@ const ProductDashboardPage = () => {
             src: pickImageUrl(principalImage),
             alt: principalImage?.altText || '',
             colorName: variation.cor,
-            file: null // Para imagens existentes, nAso hA� um objeto File novo
+            file: null // Para imagens existentes, não há um objeto File novo
           };
         })
       };
@@ -93,7 +97,7 @@ const ProductDashboardPage = () => {
 
   const handleConfirmDelete = async () => {
     if (productToDelete) {
-    setIsSaving(true);
+      setIsDeleting(true);
       setError(null);
       try {
         // A API de backend é responsável por deletar as imagens do S3 ao deletar o produto.
@@ -109,7 +113,9 @@ const ProductDashboardPage = () => {
         setError('Erro ao excluir produto. Verifique o console para mais detalhes.');
         setIsConfirmModalOpen(false);
         setProductToDelete(null);
-      } finally {      setIsSaving(false);   }
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -139,7 +145,6 @@ const ProductDashboardPage = () => {
         };
 
         return {
-          id: variationId,
           data: variationData,
           file: imgData.file || null
         };
@@ -149,38 +154,17 @@ const ProductDashboardPage = () => {
         id: productDataFromForm.id,
         nome: productDataFromForm.name,
         descricao: productDataFromForm.description,
-        ativo: true
+        ativo: true,
+        variacoes: variationPayloads.map((payload) => payload.data)
       };
 
-      const filesForCreate = variationPayloads.map((payload) => payload.file).filter(Boolean);
+      const filesForSubmit = variationPayloads.map((payload) => payload.file).filter(Boolean);
 
       if (productDataJson.id) {
-        const newVariations = variationPayloads.filter((payload) => !payload.id);
-        const newVariationFiles = newVariations.map((payload) => payload.file).filter(Boolean);
-        const updatePayload = {
-          ...productDataJson,
-          ...(newVariations.length > 0 ? { variacoes: newVariations.map((payload) => payload.data) } : {})
-        };
-
-        await updateProduct(productDataJson.id, updatePayload, newVariationFiles);
-
-        const existingVariations = variationPayloads.filter((payload) => payload.id);
-        await Promise.all(existingVariations.map((payload) => (
-          updateProductVariation(
-            productDataJson.id,
-            payload.id,
-            payload.data,
-            payload.file ? [payload.file] : []
-          )
-        )));
+        await updateProduct(productDataJson.id, productDataJson, filesForSubmit);
         showSuccessMessage('Produto atualizado com sucesso!');
       } else {
-        const createPayload = {
-          ...productDataJson,
-          variacoes: variationPayloads.map((payload) => payload.data)
-        };
-
-        await createProduct(createPayload, filesForCreate);
+        await createProduct(productDataJson, filesForSubmit);
         showSuccessMessage('Produto cadastrado com sucesso!');
       }
       setIsModalOpen(false);
@@ -196,6 +180,7 @@ const ProductDashboardPage = () => {
       {successMessage && <p className="success-message" role="status">{successMessage}</p>}
 
       {isLoading && <p className="loading-message">Carregando produtos...</p>}
+      {isDeleting && <p className="loading-message">Excluindo produto...</p>}
       {error && <p className="error-message" role="alert">{error}</p>}
       
       {!error && (
@@ -237,6 +222,7 @@ const ProductDashboardPage = () => {
 
       <ConfirmationModal
         isOpen={isConfirmModalOpen}
+        isProcessing={isDeleting}
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={handleConfirmDelete}
         title="Confirmar Exclusão"

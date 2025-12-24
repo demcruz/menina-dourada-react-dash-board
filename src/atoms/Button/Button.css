@@ -34,20 +34,29 @@
 
 /* Estilos específicos para botões com apenas ícone (como os de editar/excluir e fechar modal) */
 .button.icon-only {
-    padding: 0.25rem; /* p-1 */
-    border-radius: 9999px; /* rounded-full */
-    background: none;
-    border: none;
-    color: #9ca3af; /* text-gray-400 */
-    box-shadow: none; /* Remove shadow para ícones */
+    padding: 0.25rem;
+    border-radius: 9999px;
+    background-color: #e0f2fe;
+    border: 1px solid #bae6fd;
+    color: #0369a1;
+    box-shadow: none;
 }
 
 .button.icon-only:hover {
-    color: #4b5563; /* hover:text-gray-600 */
+    color: #075985;
+    background-color: #bae6fd;
+}
+
+.button.icon-only.red-hover {
+    background-color: #fee2e2;
+    border-color: #fecaca;
+    color: #b91c1c;
 }
 
 .button.icon-only.red-hover:hover {
-    color: #ef4444; /* hover:text-red-700 */
+    color: #991b1b;
+    background-color: #fecaca;
+    border-color: #fca5a5;
 }
 
 .button-icon {

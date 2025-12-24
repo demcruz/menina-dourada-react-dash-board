@@ -49,4 +49,4 @@ const ProductListingTemplate = ({ products, onEditProduct, onDeleteProduct, isLo
   );
 };
 
-export default ProductListingTemplate;
+export default React.memo(ProductListingTemplate);
