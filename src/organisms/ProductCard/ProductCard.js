@@ -4,6 +4,7 @@ import ColorThumbnails from '../../molecules/ColorThumbnails/ColorThumbnails';
 import Button from '../../atoms/Button/Button';
 import EditIcon from '../../atoms/EditIcon';
 import TrashIcon from '../../atoms/TrashIcon';
+import { pickImageUrl } from '../../utils/imageUtils';
 import './ProductCard.css';
 
 const ProductCard = ({ product, onEdit, onDelete }) => {
@@ -12,7 +13,8 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
     return null;
   }
 
-  const productName = product.nome || 'Nome Indisponível';
+  const productName = product.nome || product.name || 'Nome Indisponível';
+  const productDescription = product.descricao || product.description || '';
 
   const firstVariation = product.variacoes && product.variacoes.length > 0 ? product.variacoes[0] : null;
   const productPrice = firstVariation && firstVariation.preco !== undefined && firstVariation.preco !== null
@@ -30,9 +32,10 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
     product.variacoes.forEach(variation => {
       if (variation.cor) {
         const principalImage = variation.imagens?.find(img => img.isPrincipal) || variation.imagens?.[0];
-        
+        const thumbnailUrl = pickImageUrl(principalImage);
+
         colorsForThumbnails.push({
-          src: principalImage?.url || 'https://via.placeholder.com/50x50?text=?', // Garante que src seja string
+          src: thumbnailUrl || 'https://via.placeholder.com/50x50?text=?', // Garante que src seja string
           colorName: variation.cor
         });
       }
@@ -44,27 +47,31 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
           if (variation.imagens && variation.imagens.length > 0) { // Garante que o array de imagens existe
               const currentPrincipalImage = variation.imagens.find(img => img.isPrincipal);
               const currentFirstImage = variation.imagens[0];
+              const resolvedPrincipalUrl = pickImageUrl(currentPrincipalImage);
+              const resolvedFirstUrl = pickImageUrl(currentFirstImage);
 
-              // Se houver uma imagem principal com URL válida, use-a
-              if (currentPrincipalImage && currentPrincipalImage.url) {
-                  imageUrl = currentPrincipalImage.url;
-                  imageAlt = currentPrincipalImage.altText || `Imagem de ${variation.cor}`;
+              // Se houver uma imagem principal com URL valida, use-a
+              if (resolvedPrincipalUrl) {
+                  imageUrl = resolvedPrincipalUrl;
+                  imageAlt = currentPrincipalImage?.altText || `Imagem de ${variation.cor}`;
               } 
-              // Senão, se houver uma primeira imagem com URL válida, use-a
-              else if (currentFirstImage && currentFirstImage.url) {
-                  imageUrl = currentFirstImage.url;
-                  imageAlt = currentFirstImage.altText || `Imagem de ${variation.cor}`;
+              // Senao, se houver uma primeira imagem com URL valida, use-a
+              else if (resolvedFirstUrl) {
+                  imageUrl = resolvedFirstUrl;
+                  imageAlt = currentFirstImage?.altText || `Imagem de ${variation.cor}`;
               }
-              // Se nenhuma URL válida for encontrada aqui, imageUrl permanece com o placeholder inicial
+              // Se nenhuma URL valida for encontrada aqui, imageUrl permanece com o placeholder inicial
           }
       }
     });
 
     // Fallback final: Se após iterar todas as variações, imageUrl ainda for o placeholder
     // E se a primeira variação tiver uma imagem com URL válida, use-a.
-    if (imageUrl.includes('Produto+sem+imagem') && product.variacoes[0]?.imagens?.[0]?.url) {
-        imageUrl = product.variacoes[0].imagens[0].url;
-        imageAlt = product.variacoes[0].imagens[0].altText || `Imagem de ${product.variacoes[0].cor}`;
+    const fallbackImage = product.variacoes[0]?.imagens?.[0];
+    const fallbackUrl = pickImageUrl(fallbackImage);
+    if (imageUrl.includes('Produto+sem+imagem') && fallbackUrl) {
+        imageUrl = fallbackUrl;
+        imageAlt = fallbackImage?.altText || `Imagem de ${product.variacoes[0].cor}`;
     }
   }
 
@@ -81,6 +88,10 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
           <h3 className="product-card-title">{productName}</h3>
           <span className="product-card-price">R$ {displayPrice}</span>
         </div>
+        
+        {productDescription && (
+          <p className="product-card-description">{productDescription}</p>
+        )}
 
         {colorsForThumbnails.length > 0 && (
           <ColorThumbnails images={colorsForThumbnails} />
