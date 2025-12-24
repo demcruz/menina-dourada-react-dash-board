@@ -1,7 +1,11 @@
 import axios from 'axios';
 
-// URL base da API (configuravel por REACT_APP_API_BASE_URL)
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://api.meninadourada.shop';
+// API base URL (configurable via REACT_APP_API_BASE_URL).
+// Prefer the env var in any environment, fallback to proxy in development.
+const rawApiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = rawApiBaseUrl
+  ? rawApiBaseUrl.replace(/\/+$/, '')
+  : (process.env.NODE_ENV === 'development' ? '' : 'https://api.meninadourada.shop');
 
 
 
@@ -52,7 +56,6 @@ export const getProducts = async (page = 0, size = 8) => {
 
 // Função para criar um novo produto (agora com suporte a FormData para imagens)
 // productData: objeto JSON com nome, descricao, ativo, variacoes (sem imagens)
-// files: array de objetos que contêm o File real (ex: [{ file: File, colorName: '...' }])
 export const createProduct = async (productData, files = []) => {
   try {
     const formData = new FormData();
@@ -90,41 +93,18 @@ export const getProductById = async (productId) => {
   }
 };
 
-// Função para atualizar um produto existente (agora com suporte a FormData para imagens)
+// Funcao para atualizar um produto existente
 // productId: o ID do produto a ser atualizado
 // updatedProductData: objeto JSON com nome, descricao, ativo, variacoes (sem imagens)
-// files: array de objetos que contêm o File real (ex: [{ file: File, colorName: '...' }])
-export const updateProduct = async (productId, updatedProductData, files = []) => {
+export const updateProduct = async (productId, updatedProductData) => {
   try {
-    if (!files || files.length === 0) {
-      const response = await axios.put(`${API_BASE_URL}/produtos/${productId}`, updatedProductData, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data;
-    }
-
-    const formData = new FormData();
-    // Adiciona o objeto JSON do produto atualizado como uma String
-    formData.append('productData', JSON.stringify(updatedProductData));
-
-    // CORREAOAYO AQUI: aceita File direto ou { file: File, colorName: '...' }
-    files.forEach((fileEntry) => {
-      const file = fileEntry instanceof File ? fileEntry : fileEntry?.file;
-      if (file) {
-        formData.append('files', file);
-      }
-    });
-
-    const response = await axios.put(`${API_BASE_URL}/produtos/${productId}`, formData, {
+    const response = await axios.put(`${API_BASE_URL}/produtos/${productId}`, updatedProductData, {
       headers: {
-        // Deixe o navegador definir o Content-Type automaticamente para FormData
+        'Content-Type': 'application/json'
       }
     });
     return response.data;
   } catch (error) {
-    console.error(`Erro ao atualizar produto com ID ${productId}:`, error);
     console.error(`Erro ao atualizar produto com ID ${productId}:`, error);
     throw error;
   }

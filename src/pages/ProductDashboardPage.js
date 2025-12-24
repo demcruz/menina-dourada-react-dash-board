@@ -1,12 +1,10 @@
 // src/pages/ProductDashboardPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import DashboardLayout from '../templates/DashboardLayout/DashboardLayout';
+import AppShell from '../components/layout/AppShell';
 import ProductListingTemplate from '../templates/ProductListingTemplate/ProductListingTemplate';
 import ProductFormModal from '../organisms/ProductFormModal/ProductFormModal';
 import ConfirmationModal from '../organisms/ConfirmationModal/ConfirmationModal';
-// Removendo uploadImageToS3 e deleteImageFromS3 daqui, pois o backend farÃ¡ isso
-import { getProducts, createProduct, updateProduct, deleteProduct } from '../api/productService'; // <<<< deleteImageFromS3 removido
-import Button from '../atoms/Button/Button';
+import { getProducts, createProduct, updateProduct, deleteProduct } from '../api/productService';
 import { pickImageUrl } from '../utils/imageUtils';
 
 const ProductDashboardPage = () => {
@@ -22,7 +20,7 @@ const ProductDashboardPage = () => {
   const [page, setPage] = useState(0);
   // eslint-disable-next-line no-unused-vars
   const [pageSize, setPageSize] = useState(8);
-  const [totalPages, setTotalPages] = useState(0); // Renomeado para evitar conflito
+  const [totalPages, setTotalPages] = useState(0);
 
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
@@ -49,8 +47,10 @@ const ProductDashboardPage = () => {
       setTotalPages(response.totalPages);
     } catch (err) {
       console.error("Falha ao carregar produtos:", err);
-      setError("Não foi possível carregar os produtos. Verifique se o backend Java está rodando e o CORS está configurado corretamente.");
-    } finally {   setIsLoading(false);   }
+      setError("Nao foi possivel carregar os produtos. Verifique se o backend Java esta rodando e o CORS esta configurado corretamente.");
+    } finally {
+      setIsLoading(false);
+    }
   }, [page, pageSize]);
 
   useEffect(() => {
@@ -79,14 +79,14 @@ const ProductDashboardPage = () => {
             src: pickImageUrl(principalImage),
             alt: principalImage?.altText || '',
             colorName: variation.cor,
-            file: null // Para imagens existentes, não há um objeto File novo
+            file: null
           };
         })
       };
       setEditingProduct(transformedProduct);
       setIsModalOpen(true);
     } else {
-      alert("Produto não encontrado para edição.");
+      alert("Produto nao encontrado para edicao.");
     }
   };
 
@@ -100,11 +100,8 @@ const ProductDashboardPage = () => {
       setIsDeleting(true);
       setError(null);
       try {
-        // A API de backend é responsável por deletar as imagens do S3 ao deletar o produto.
-        // Não precisamos chamar deleteImageFromS3 aqui no frontend para cada imagem.
-        // Apenas chamamos a API de exclusão do produto.
-        await deleteProduct(productToDelete); 
-        showSuccessMessage('Produto excluído com sucesso!');
+        await deleteProduct(productToDelete);
+        showSuccessMessage('Produto excluido com sucesso!');
         fetchProducts();
         setIsConfirmModalOpen(false);
         setProductToDelete(null);
@@ -128,6 +125,11 @@ const ProductDashboardPage = () => {
       const variationPayloads = imagesToProcess.map((imgData, index) => {
         const originalVariation = editingProduct?.variacoes?.[index];
         const variationId = originalVariation?.id || null;
+        const existingImageUrl = originalVariation?.imagens?.[0]?.url || null;
+
+        const resolvedImageUrl = imgData.file
+          ? (existingImageUrl || null)
+          : (imgData.src || null);
 
         const variationData = {
           id: variationId,
@@ -137,7 +139,7 @@ const ProductDashboardPage = () => {
           estoque: 100,
           imagens: [
             {
-              url: imgData.file ? null : (imgData.src || null),
+              url: resolvedImageUrl,
               altText: imgData.alt || `${productDataFromForm.name} - Cor ${imgData.colorName}`,
               isPrincipal: true
             }
@@ -146,7 +148,9 @@ const ProductDashboardPage = () => {
 
         return {
           data: variationData,
-          file: imgData.file || null
+          file: imgData.file || null,
+          hasNewFile: Boolean(imgData.file),
+          hasExistingUrl: Boolean(existingImageUrl)
         };
       });
 
@@ -159,9 +163,17 @@ const ProductDashboardPage = () => {
       };
 
       const filesForSubmit = variationPayloads.map((payload) => payload.file).filter(Boolean);
+      const hasNewImagesWithoutUrl = Boolean(productDataJson.id)
+        && variationPayloads.some((payload) => payload.hasNewFile && !payload.hasExistingUrl);
+
+      if (hasNewImagesWithoutUrl) {
+        setError('Atualizacao de imagens com novos arquivos nao esta disponivel. Remova os novos arquivos e tente novamente.');
+        setIsSaving(false);
+        return;
+      }
 
       if (productDataJson.id) {
-        await updateProduct(productDataJson.id, productDataJson, filesForSubmit);
+        await updateProduct(productDataJson.id, productDataJson);
         showSuccessMessage('Produto atualizado com sucesso!');
       } else {
         await createProduct(productDataJson, filesForSubmit);
@@ -172,17 +184,47 @@ const ProductDashboardPage = () => {
     } catch (err) {
       console.error("Erro ao salvar produto:", err.response?.data || err.message || err);
       setError(err.response?.data?.message || 'Falha ao salvar produto.');
-    } finally {    setIsSaving(false);   }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
-    <DashboardLayout onAddProduct={handleAddProduct}>
-      {successMessage && <p className="success-message" role="status">{successMessage}</p>}
+    <AppShell
+      pageTitle="Dashboard - MD"
+      pageSubtitle="Gerencie seus produtos de moda praia"
+      onAddProduct={handleAddProduct}
+    >
+      {successMessage && (
+        <div className="alert alert-success" role="status">
+          {successMessage}
+        </div>
+      )}
 
-      {isLoading && <p className="loading-message">Carregando produtos...</p>}
-      {isDeleting && <p className="loading-message">Excluindo produto...</p>}
-      {error && <p className="error-message" role="alert">{error}</p>}
-      
+      {isLoading && (
+        <div className="text-center" style={{ padding: 'var(--space-8)' }}>
+          <div className="loading-spinner" style={{ margin: '0 auto' }}></div>
+          <p className="text-secondary" style={{ marginTop: 'var(--space-2)' }}>
+            Carregando produtos...
+          </p>
+        </div>
+      )}
+
+      {isDeleting && (
+        <div className="text-center" style={{ padding: 'var(--space-8)' }}>
+          <div className="loading-spinner" style={{ margin: '0 auto' }}></div>
+          <p className="text-secondary" style={{ marginTop: 'var(--space-2)' }}>
+            Excluindo produto...
+          </p>
+        </div>
+      )}
+
+      {error && (
+        <div className="alert alert-error" role="alert">
+          {error}
+        </div>
+      )}
+
       {!error && (
         <ProductListingTemplate
           products={products}
@@ -191,24 +233,26 @@ const ProductDashboardPage = () => {
           onDeleteProduct={handleOpenConfirmDeleteModal}
         />
       )}
-      
+
       {!isLoading && !error && products.length > 0 && (
         <div className="pagination-controls">
-          <Button
+          <button
+            className="button secondary"
             onClick={() => setPage(prev => Math.max(0, prev - 1))}
             disabled={page === 0}
-            variant="secondary"
           >
             Anterior
-          </Button>
-          <span className="pagination-info">Página {page + 1} de {totalPages}</span>
-          <Button
+          </button>
+          <span className="pagination-info">
+            Pagina {page + 1} de {totalPages}
+          </span>
+          <button
+            className="button secondary"
             onClick={() => setPage(prev => Math.min(totalPages - 1, prev + 1))}
             disabled={page >= totalPages - 1}
-            variant="secondary"
           >
             Próximo
-          </Button>
+          </button>
         </div>
       )}
 
@@ -225,12 +269,12 @@ const ProductDashboardPage = () => {
         isProcessing={isDeleting}
         onClose={() => setIsConfirmModalOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Confirmar Exclusão"
-        message="Tem certeza que deseja excluir este produto? Esta ação é irreversível."
+        title="Confirmar Exclusao"
+        message="Tem certeza que deseja excluir este produto? Esta acao e irreversivel."
         confirmText="Excluir"
         confirmVariant="danger"
       />
-    </DashboardLayout>
+    </AppShell>
   );
 };
 
