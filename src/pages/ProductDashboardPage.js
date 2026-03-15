@@ -4,8 +4,7 @@ import AppShell from '../components/layout/AppShell';
 import ProductListingTemplate from '../templates/ProductListingTemplate/ProductListingTemplate';
 import ProductFormModal from '../organisms/ProductFormModal/ProductFormModal';
 import ConfirmationModal from '../organisms/ConfirmationModal/ConfirmationModal';
-import { getProducts, createProduct, updateProduct, deleteProduct } from '../api/productService';
-import { pickImageUrl } from '../utils/imageUtils';
+import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from '../api/productService';
 
 const ProductDashboardPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,31 +61,34 @@ const ProductDashboardPage = () => {
     setIsModalOpen(true);
   };
 
-  const handleEditProduct = (productId) => {
-    const productFromApi = products.find(p => p.id === productId);
+  const handleEditProduct = async (productId) => {
+    try {
+      // Tenta buscar o produto completo por ID
+      const productFromApi = await getProductById(productId);
 
-    if (productFromApi) {
-      const variations = Array.isArray(productFromApi.variacoes) ? productFromApi.variacoes : [];
-      const transformedProduct = {
-        id: productFromApi.id,
-        name: productFromApi.nome || productFromApi.name,
-        description: productFromApi.descricao || productFromApi.description || '',
-        price: variations[0]?.preco || 0,
-        variacoes: variations,
-        images: variations.map(variation => {
-          const principalImage = variation.imagens?.find(img => img.isPrincipal) || variation.imagens?.[0];
-          return {
-            src: pickImageUrl(principalImage),
-            alt: principalImage?.altText || '',
-            colorName: variation.cor,
-            file: null
-          };
-        })
-      };
-      setEditingProduct(transformedProduct);
-      setIsModalOpen(true);
-    } else {
-      alert("Produto nao encontrado para edicao.");
+      if (productFromApi) {
+        setEditingProduct(productFromApi);
+        setIsModalOpen(true);
+      } else {
+        // Fallback: usa os dados da listagem
+        const productFromList = products.find(p => p.id === productId);
+        if (productFromList) {
+          setEditingProduct(productFromList);
+          setIsModalOpen(true);
+        } else {
+          alert("Produto nao encontrado para edicao.");
+        }
+      }
+    } catch (err) {
+      console.error("Erro ao buscar produto por ID, usando dados da listagem:", err);
+      // Fallback: usa os dados da listagem
+      const productFromList = products.find(p => p.id === productId);
+      if (productFromList) {
+        setEditingProduct(productFromList);
+        setIsModalOpen(true);
+      } else {
+        alert("Erro ao carregar produto para edição.");
+      }
     }
   };
 
@@ -116,67 +118,17 @@ const ProductDashboardPage = () => {
     }
   };
 
-  const handleSaveProduct = async (productDataFromForm) => {
+  const handleSaveProduct = async (productData, files = []) => {
     setIsSaving(true);
     setError(null);
     try {
-      const imagesToProcess = productDataFromForm.images || [];
-
-      const variationPayloads = imagesToProcess.map((imgData, index) => {
-        const originalVariation = editingProduct?.variacoes?.[index];
-        const variationId = originalVariation?.id || null;
-        const existingImageUrl = originalVariation?.imagens?.[0]?.url || null;
-
-        const resolvedImageUrl = imgData.file
-          ? (existingImageUrl || null)
-          : (imgData.src || null);
-
-        const variationData = {
-          id: variationId,
-          cor: imgData.colorName,
-          tamanho: "Unico",
-          preco: productDataFromForm.price,
-          estoque: 100,
-          imagens: [
-            {
-              url: resolvedImageUrl,
-              altText: imgData.alt || `${productDataFromForm.name} - Cor ${imgData.colorName}`,
-              isPrincipal: true
-            }
-          ]
-        };
-
-        return {
-          data: variationData,
-          file: imgData.file || null,
-          hasNewFile: Boolean(imgData.file),
-          hasExistingUrl: Boolean(existingImageUrl)
-        };
-      });
-
-      const productDataJson = {
-        id: productDataFromForm.id,
-        nome: productDataFromForm.name,
-        descricao: productDataFromForm.description,
-        ativo: true,
-        variacoes: variationPayloads.map((payload) => payload.data)
-      };
-
-      const filesForSubmit = variationPayloads.map((payload) => payload.file).filter(Boolean);
-      const hasNewImagesWithoutUrl = Boolean(productDataJson.id)
-        && variationPayloads.some((payload) => payload.hasNewFile && !payload.hasExistingUrl);
-
-      if (hasNewImagesWithoutUrl) {
-        setError('Atualizacao de imagens com novos arquivos nao esta disponivel. Remova os novos arquivos e tente novamente.');
-        setIsSaving(false);
-        return;
-      }
-
-      if (productDataJson.id) {
-        await updateProduct(productDataJson.id, productDataJson);
+      if (productData.id) {
+        // Atualização - PUT com JSON completo
+        await updateProduct(productData.id, productData, files);
         showSuccessMessage('Produto atualizado com sucesso!');
       } else {
-        await createProduct(productDataJson, filesForSubmit);
+        // Criação - POST com FormData
+        await createProduct(productData, files);
         showSuccessMessage('Produto cadastrado com sucesso!');
       }
       setIsModalOpen(false);

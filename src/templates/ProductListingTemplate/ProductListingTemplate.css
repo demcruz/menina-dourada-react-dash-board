@@ -5,14 +5,15 @@
     grid-column: 1 / -1;
     text-align: center;
     padding: 2rem;
-    color: #6b7280;
+    color: var(--text-secondary);
     font-size: 1.125rem;
 }
 
 .product-skeleton-card {
-    background-color: #ffffff;
+    background-color: var(--bg-secondary);
     border-radius: 0.9rem;
-    box-shadow: 0 6px 12px rgba(15, 23, 42, 0.08);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-primary);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -23,12 +24,12 @@
 .product-skeleton-image {
     width: 100%;
     aspect-ratio: 4 / 3;
-    background-color: #e2e8f0;
+    background-color: var(--bg-tertiary);
 }
 
 .product-skeleton-content {
     padding: 1rem 1.1rem 0.85rem;
-    background-color: #fff7ed;
+    background-color: var(--bg-secondary);
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
@@ -43,7 +44,7 @@
 
 .skeleton-line {
     height: 0.75rem;
-    background-color: #e2e8f0;
+    background-color: var(--bg-tertiary);
     border-radius: 999px;
 }
 
@@ -71,7 +72,7 @@
     width: 22px;
     height: 22px;
     border-radius: 999px;
-    background-color: #e2e8f0;
+    background-color: var(--bg-tertiary);
 }
 
 .product-skeleton-actions {
@@ -85,25 +86,11 @@
     width: 32px;
     height: 32px;
     border-radius: 8px;
-    background-color: #e2e8f0;
+    background-color: var(--bg-tertiary);
 }
 
 .skeleton-shimmer {
     position: relative;
     overflow: hidden;
-}
-
-.skeleton-shimmer::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
-    animation: skeleton-shimmer 1.2s infinite;
-}
-
-@keyframes skeleton-shimmer {
-    100% {
-        transform: translateX(100%);
-    }
+    animation: skeleton-pulse 1.2s ease-in-out infinite;
 }

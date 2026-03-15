@@ -1,0 +1,26 @@
+diff --git a/node_modules/spdy-transport/lib/spdy-transport/utils.js b/node_modules/spdy-transport/lib/spdy-transport/utils.js
+index 7f379f2..c5f68b5 100644
+--- a/node_modules/spdy-transport/lib/spdy-transport/utils.js
++++ b/node_modules/spdy-transport/lib/spdy-transport/utils.js
+@@ -4,9 +4,18 @@ var util = require('util')
+ var isNode = require('detect-node')
+ 
+ // Node.js 0.8, 0.10 and 0.12 support
+-Object.assign = (process.versions.modules >= 46 || !isNode)
+-  ? Object.assign // eslint-disable-next-line
+-  : util._extend
++Object.assign = Object.assign || function assign (target) {
++  for (var i = 1; i < arguments.length; i++) {
++    var source = arguments[i]
++    if (!source) { continue }
++    for (var key in source) {
++      if (Object.prototype.hasOwnProperty.call(source, key)) {
++        target[key] = source[key]
++      }
++    }
++  }
++  return target
++}
+ 
+ function QueueItem () {
+   this.prev = null

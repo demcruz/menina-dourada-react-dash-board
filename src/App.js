@@ -4,7 +4,13 @@ import { AuthProvider } from './auth/AuthContext';
 import RequireAuth from './auth/RequireAuth';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
+import AuthCallback from './pages/AuthCallback';
 import ProductDashboardPage from './pages/ProductDashboardPage';
+import OrdersPage from './pages/OrdersPage';
+import CustomersPage from './pages/CustomersPage';
+import InventoryPage from './pages/InventoryPage';
+import SettingsPage from './pages/SettingsPage';
+import CostMarginPage from './pages/CostMarginPage';
 
 function App() {
   return (
@@ -14,6 +20,7 @@ function App() {
           {/* Public routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           
           {/* Protected routes */}
           <Route 
@@ -21,6 +28,51 @@ function App() {
             element={
               <RequireAuth>
                 <ProductDashboardPage />
+              </RequireAuth>
+            } 
+          />
+
+          <Route 
+            path="/pedidos" 
+            element={
+              <RequireAuth>
+                <OrdersPage />
+              </RequireAuth>
+            } 
+          />
+
+          <Route 
+            path="/clientes" 
+            element={
+              <RequireAuth>
+                <CustomersPage />
+              </RequireAuth>
+            } 
+          />
+
+          <Route 
+            path="/estoque" 
+            element={
+              <RequireAuth>
+                <InventoryPage />
+              </RequireAuth>
+            } 
+          />
+
+          <Route 
+            path="/configuracoes" 
+            element={
+              <RequireAuth>
+                <SettingsPage />
+              </RequireAuth>
+            } 
+          />
+
+          <Route 
+            path="/custos" 
+            element={
+              <RequireAuth>
+                <CostMarginPage />
               </RequireAuth>
             } 
           />

@@ -5,7 +5,7 @@
 
 .color-thumbnails-label {
     font-size: 0.875rem; /* text-sm */
-    color: #6b7280; /* text-gray-500 */
+    color: var(--text-secondary); /* text-gray-500 */
     margin-bottom: 0.5rem; /* mb-2 */
 }
 
@@ -44,8 +44,8 @@
     transform: translateX(-50%) translateY(-0.5rem); /* transform -translate-x-1/2 mb-2 */
     padding: 0.25rem 0.5rem; /* px-2 py-1 */
     font-size: 0.75rem; /* text-xs */
-    color: white; /* text-white */
-    background-color: #1f2937; /* bg-gray-800 */
+    color: var(--text-inverse); /* text-white */
+    background-color: var(--text-primary); /* bg-gray-800 */
     border-radius: 0.25rem; /* rounded */
     opacity: 0;
     visibility: hidden;

@@ -1,53 +1,102 @@
 /* src/atoms/Modal/Modal.css */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    z-index: 50;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  z-index: var(--z-modal-backdrop);
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .modal-overlay.invisible {
-    visibility: hidden;
+  visibility: hidden;
 }
+
 .modal-overlay.visible {
-    visibility: visible;
+  visibility: visible;
 }
+
 .modal-overlay.opacity-0 {
-    opacity: 0;
+  opacity: 0;
 }
+
 .modal-overlay.opacity-100 {
-    opacity: 1;
+  opacity: 1;
 }
 
 .modal-content-wrapper {
-    background-color: white;
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: min(94vw, 900px);
+  max-height: 90vh;
+  max-height: 90dvh; /* Dynamic viewport height para mobile */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem;
+  -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 0.5rem;
+    align-items: flex-start;
+    padding-top: 2rem;
+  }
+
+  .modal-content-wrapper {
+    width: 100%;
+    max-height: calc(100vh - 3rem);
+    max-height: calc(100dvh - 3rem);
     border-radius: 0.75rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-    max-width: 640px;
-    width: min(92vw, 640px);
-    max-height: 85vh;
-    overflow-y: auto;
-    /* ADD THIS: Consistent padding for the content inside */
-    padding: 1.25rem; /* This replaces the child selector padding rule */
+  }
 }
 
-@media (max-width: 640px) {
-    .modal-content-wrapper {
-        max-height: 92vh;
-        padding: 1rem;
-        border-radius: 0.9rem;
-    }
+/* Mobile */
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-content-wrapper {
+    width: 100%;
+    max-height: 95vh;
+    max-height: 95dvh;
+    border-radius: 1rem 1rem 0 0;
+    padding: 0.875rem;
+    padding-bottom: calc(0.875rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
-/* REMOVE THIS RULE if you've added padding directly to modal-content-wrapper */
-/* .modal-content-wrapper > div {
-    padding: 1.5rem;
-} */
+/* Telas muito pequenas */
+@media (max-width: 360px) {
+  .modal-content-wrapper {
+    padding: 0.75rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    max-height: 92vh;
+    max-height: 92dvh;
+  }
+}
+
+/* Landscape em mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .modal-overlay {
+    padding: 0.25rem;
+    align-items: center;
+  }
+
+  .modal-content-wrapper {
+    max-height: calc(100vh - 0.5rem);
+    max-height: calc(100dvh - 0.5rem);
+    border-radius: 0.5rem;
+    padding: 0.625rem;
+  }
+}

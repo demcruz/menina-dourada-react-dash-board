@@ -1,15 +1,10 @@
-import axios from 'axios';
+import axios from './axiosClient';
 
 // API base URL (configurable via REACT_APP_API_BASE_URL).
-// Prefer the env var in any environment, fallback to proxy in development.
 const rawApiBaseUrl = process.env.REACT_APP_API_BASE_URL;
 const API_BASE_URL = rawApiBaseUrl
   ? rawApiBaseUrl.replace(/\/+$/, '')
   : (process.env.NODE_ENV === 'development' ? '' : 'https://api.meninadourada.shop');
-
-
-
-
 
 const normalizeProductId = (product) => product.id || product.productId || product._id || null;
 
@@ -54,15 +49,23 @@ export const getProducts = async (page = 0, size = 8) => {
   }
 };
 
-// Função para criar um novo produto (agora com suporte a FormData para imagens)
-// productData: objeto JSON com nome, descricao, ativo, variacoes (sem imagens)
+/**
+ * Cria um novo produto com o novo formato JSON
+ * @param {Object} productData - Dados do produto no novo formato:
+ *   {
+ *     nome, descricao, ativo, ufCadastro, categoria, marca, tags[],
+ *     variacoes: [{ sku, cor, tamanho, estoque, custoUnitario, precoVenda, peso, dimensoes, imagens }]
+ *   }
+ * @param {Array} files - Array de objetos { file, variacaoIndex, imagemIndex }
+ */
 export const createProduct = async (productData, files = []) => {
   try {
     const formData = new FormData();
-    // Adiciona o objeto JSON do produto como uma String
+    
+    // Adiciona o objeto JSON do produto
     formData.append('productData', JSON.stringify(productData));
 
-    // CORREA�A�O AQUI: aceita File direto ou { file: File, colorName: '...' }
+    // Adiciona os arquivos de imagem
     files.forEach((fileEntry) => {
       const file = fileEntry instanceof File ? fileEntry : fileEntry?.file;
       if (file) {
@@ -72,7 +75,7 @@ export const createProduct = async (productData, files = []) => {
 
     const response = await axios.post(`${API_BASE_URL}/produtos`, formData, {
       headers: {
-        // O Content-Type serA� automaticamente definido como multipart/form-data pelo navegador ao usar FormData
+        // Content-Type será automaticamente definido como multipart/form-data
       }
     });
     return response.data;
@@ -93,11 +96,35 @@ export const getProductById = async (productId) => {
   }
 };
 
-// Funcao para atualizar um produto existente
-// productId: o ID do produto a ser atualizado
-// updatedProductData: objeto JSON com nome, descricao, ativo, variacoes (sem imagens)
-export const updateProduct = async (productId, updatedProductData) => {
+/**
+ * Atualiza um produto existente com o novo formato JSON
+ * @param {string} productId - ID do produto
+ * @param {Object} updatedProductData - Dados atualizados no novo formato
+ * @param {Array} files - Array de novos arquivos de imagem (opcional)
+ */
+export const updateProduct = async (productId, updatedProductData, files = []) => {
   try {
+    // Se há novos arquivos, usa FormData
+    if (files && files.length > 0) {
+      const formData = new FormData();
+      formData.append('productData', JSON.stringify(updatedProductData));
+      
+      files.forEach((fileEntry) => {
+        const file = fileEntry instanceof File ? fileEntry : fileEntry?.file;
+        if (file) {
+          formData.append('files', file);
+        }
+      });
+
+      const response = await axios.put(`${API_BASE_URL}/produtos/${productId}`, formData, {
+        headers: {
+          // Content-Type será automaticamente definido como multipart/form-data
+        }
+      });
+      return response.data;
+    }
+
+    // Sem novos arquivos, envia JSON direto
     const response = await axios.put(`${API_BASE_URL}/produtos/${productId}`, updatedProductData, {
       headers: {
         'Content-Type': 'application/json'
@@ -110,8 +137,7 @@ export const updateProduct = async (productId, updatedProductData) => {
   }
 };
 
-
-// Funcao para deletar um produto
+// Função para deletar um produto
 export const deleteProduct = async (productId) => {
   try {
     await axios.delete(`${API_BASE_URL}/produtos/${productId}`);
@@ -122,7 +148,7 @@ export const deleteProduct = async (productId) => {
   }
 };
 
-// Funções para upload/delete de imagens avulsas (S3) - Mantidas caso precise no futuro
+// Funções para upload/delete de imagens avulsas (S3)
 export const uploadImageToS3 = async (file) => {
   try {
     const formData = new FormData();
@@ -149,10 +175,3 @@ export const deleteImageFromS3 = async (imageUrl) => {
     throw error;
   }
 };
-
-
-
-
-
-
-

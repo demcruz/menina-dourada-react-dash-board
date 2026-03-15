@@ -6,7 +6,7 @@
     --bg-primary: #F9FAFB;
     --bg-secondary: #FFFFFF;
     --bg-tertiary: #F3F4F6;
-    --bg-hover: #F9FAFB;
+    --bg-hover: #F3F4F6;
     
     /* Text Colors */
     --text-primary: #111827;
@@ -17,12 +17,18 @@
     /* Border Colors */
     --border-primary: #E5E7EB;
     --border-secondary: #D1D5DB;
-    --border-focus: #2563EB;
+    --border-focus: #0EA5A4;
     
     /* Brand Colors */
-    --accent: #2563EB;
-    --accent-hover: #1D4ED8;
-    --accent-light: #EFF6FF;
+    --accent: #0EA5A4;
+    --accent-hover: #0B8E8D;
+    --accent-light: #E6FFFB;
+    --accent-ring: rgba(14, 165, 164, 0.16);
+    --gold: #D4A84F;
+    --gold-soft: #FFF4D6;
+    --coral: #F97316;
+    --coral-hover: #EA580C;
+    --coral-soft: #FFF1E6;
     
     /* Status Colors */
     --success: #059669;
@@ -172,7 +178,7 @@ body {
 .input:focus {
     outline: none;
     border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px var(--accent-ring);
 }
 
 .input:disabled {
@@ -251,14 +257,14 @@ body {
 
 /* Skeleton Loading */
 .skeleton {
-    background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-hover) 50%, var(--bg-tertiary) 75%);
-    background-size: 200% 100%;
-    animation: loading 1.5s infinite;
+    background-color: var(--bg-tertiary);
+    animation: skeleton-pulse 1.4s ease-in-out infinite;
 }
 
-@keyframes loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+@keyframes skeleton-pulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
 }
 
 /* Focus Styles */
@@ -366,7 +372,7 @@ body {
 .input:focus {
     outline: none;
     border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px var(--accent-ring);
 }
 
 .input:disabled {
@@ -461,7 +467,7 @@ body {
     height: 20px;
     border: 2px solid var(--border-primary);
     border-radius: 50%;
-    border-top-color: var(--primary);
+    border-top-color: var(--accent);
     animation: spin 1s ease-in-out infinite;
 }
 

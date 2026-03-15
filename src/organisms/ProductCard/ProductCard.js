@@ -17,8 +17,8 @@ const ProductCard = ({ product, onEdit, onDelete }) => {
   const productDescription = product.descricao || product.description || '';
 
   const firstVariation = product.variacoes && product.variacoes.length > 0 ? product.variacoes[0] : null;
-  const productPrice = firstVariation && firstVariation.preco !== undefined && firstVariation.preco !== null
-    ? firstVariation.preco
+  const productPrice = firstVariation 
+    ? (firstVariation.precoVenda ?? firstVariation.preco ?? 0)
     : 0;
 
   // Inicializa imageUrl com um placeholder vÃ¡lido.

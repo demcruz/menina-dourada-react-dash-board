@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import Button from '../../atoms/Button/Button';
 import PlusIcon from '../../atoms/PlusIcon';
@@ -16,7 +15,6 @@ const menuItems = [
 const DashboardLayout = ({ children, onAddProduct }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
 
   const handleToggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -28,7 +26,6 @@ const DashboardLayout = ({ children, onAddProduct }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
   };
 
   return (
@@ -86,7 +83,7 @@ const DashboardLayout = ({ children, onAddProduct }) => {
 
           <div className="topbar-right">
             <div className="user-chip">
-              <div className="user-name">{user?.username || 'Usuário logado'}</div>
+              <div className="user-name">{user?.username || 'Usuario logado'}</div>
               <button type="button" className="logout-button" onClick={handleLogout}>
                 Sair
               </button>

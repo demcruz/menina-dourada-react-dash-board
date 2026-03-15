@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
 import Button from '../../atoms/Button/Button';
 import PlusIcon from '../../atoms/PlusIcon';
@@ -13,11 +12,8 @@ const Header = ({
   showSidebarToggle = true 
 }) => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
-    navigate('/login');
   };
 
   return (
@@ -51,7 +47,7 @@ const Header = ({
 
       <div className="header__right">
         <div className="header__user">
-          <span className="header__username">{user?.username}</span>
+          <span className="header__username">{user?.username || 'Usuario'}</span>
           <button 
             type="button" 
             className="header__logout"
